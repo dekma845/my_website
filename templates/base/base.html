@@ -1,38 +1,11 @@
 <!-- templates/base/base.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <title>{% block title %}{% endblock %}</title>
-    <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Courier New', Courier, monospace;
-            margin: 0;
-            padding: 20px;
-        }
-        
-        h1 {
-            text-align: center;
-            font-size: 48px;
-            margin-bottom: 40px;
-        }
-        
-        p {
-            font-size: 24px;
-            line-height: 1.6;
-            text-align: justify;
-        }
-        
-        img {
-            display: block;
-            max-width: 100%;
-            height: auto;
-            margin: 20px auto;
-        }
-    </style>
-</head>
 <body>
     {% block body %}
     {% endblock %}
