@@ -4,8 +4,8 @@
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
-    color: #333;
-    background-color: #8b1a1a;
+    color: #ce0404;
+    background-color: #d8d3d3;
     margin: 0;
     padding: 20px;
 }
@@ -15,6 +15,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #111;
     margin-top: 0;
     margin-bottom: 10px;
+    text-align: center;
 }
 
 h1 { font-size: 36px; }
