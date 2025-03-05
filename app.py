@@ -33,6 +33,14 @@ def battons(variable): #функия кнопки обробаетывает п�
 def rgb():
     return task1()
 
+@app.route('/max_number')
+def max_number(n1 = 1, n2 = 3, n3 = 3):
+    if n2 > n1:
+
+        return "n2 < n1"
+    else:
+        return "max_number я "
+
 # Запускаем сервер
 if __name__ == '__main__':
     app.run(debug=True)
