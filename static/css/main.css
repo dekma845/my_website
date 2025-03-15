@@ -1,5 +1,60 @@
 /* main.css */
 
+/* шапка сайта */
+/* main.css */
+
+/* Шапка сайта */
+
+.header {
+    display: flex;
+    justify-content: space-between; /* Размещение элементов по краям */
+    align-items: center; /* Выравнивание по вертикали */
+    background-color: #111;
+    padding-top: 30px;     /* Верхний пэддинг */
+    padding-right: 20px;   /* Правый пэддинг */
+    padding-bottom: 20px;  /* Нижний пэддинг */
+    padding-left: 5px;     /* Левый пэддинг */
+    
+}
+
+.home_button { /* Селектор класса .home_button */
+    text-align: left;
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+.home_button img {
+    max-width: 20px; /* Ограничение ширины */
+    height: auto; /* Сохраняем пропорции высоты */
+}
+
+
+
+.header_buttons { /* Селектор класса .header_buttons */
+    display: flex;
+    gap: 10px; /* Отступ между кнопками */
+    margin-right: 10px;
+}
+
+/* =шапка сайта= */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Основные стили для тела страницы */
 body {
     font-family: Arial, sans-serif;

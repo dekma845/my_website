@@ -1,23 +1,25 @@
 <!-- templates/base/base.html -->
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
-    
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <title>{% block title %}{% endblock %}</title>
+
 <body>
-    <header class="header" style="text-align: center;">
-        <a href="/1"><button>кнопка 1</button></a>
-        <a href="/2"><button>кнопка 2</button></a>
-        <a href="/3"><button>кнопка 3</button></a>
-        
-        
-    
-    
-    
+    <header class="header">
+        <div class="home_button">
+            <a href="/home"><button><img src="static/css/images/home_batton.png" alt="Ваш логотип" ></button></a>
+        </div>
+        <div class="header_buttons">
+            <a href="/1"><button>кнопка 1</button></a>
+            <a href="/2"><button>кнопка 2</button></a>
+            <a href="/3"><button>кнопка 3</button></a>
+        </div>
     </header>
     {% block body %}
     {% endblock %}
 </body>
+
 </html>

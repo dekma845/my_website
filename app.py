@@ -7,6 +7,7 @@ app = Flask(__name__)
 
 # декаратор который обрабатывает маршрут 
 @app.route('/')# декарато -  старшая функция
+@app.route('/home')
 def index():# Создаём функцию
     return render_template('index.html') # return возвращает отрендаренный шаблон
   
