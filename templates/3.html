@@ -7,27 +7,21 @@
 
 <!-- Если есть ссылки, начинаем цикл -->
 {% if links %}
-{% for link in links %}
-<!-- Вывод каждой ссылки в отдельный параграф -->
-<div>
-    <!-- Подставляем ссылку в атрибут src -->
-    <iframe width="720" height="405" src="{{ link }}" frameborder="0" allow="autoplay; clipboard-write"
-        allowfullscreen></iframe>
+<div class="container">
+    {% for link in links %}
+    <!-- Вывод каждой ссылки в отдельный параграф -->
+    <div class="video-item">
+        <div class="video-player">
+            <!-- Подставляем ссылку в атрибут src -->
+            <iframe width="720" height="405" src="{{ link }}" frameborder="0" allow="autoplay; clipboard-write"
+                allowfullscreen></iframe>
+        </div>
+    </div>
+    {% endfor %}
 </div>
-{% endfor %}
 {% else %}
 <!-- Сообщение, если ссылок нет -->
 <p>Ссылки отсутствуют.</p>
-{% endif %}
-
-<script>
-    // Выводим сообщение в консоль браузера
-    console.log("Это тестовый скрипт!");
-
-    // Приветствуем пользователя при загрузке страницы
-    alert("Добро пожаловать на страницу!");
-</script>
+{% endif %} 
 
 {% endblock %}
-
-
