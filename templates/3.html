@@ -3,20 +3,22 @@
 
 {% block body %}
 
-
-
 <h1>Это третья страничка</h1>
-<!-- Простой скрипт на JavaScript -->
-<a href="https://rutube.ru/video/b632fa043743d400cce817a17ef59624/?r=wd">rutube</a>
 
+<!-- Если есть ссылки, начинаем цикл -->
+{% if links %}
+{% for link in links %}
+<!-- Вывод каждой ссылки в отдельный параграф -->
 <div>
-    <iframe width="720" height="405" src="https://rutube.ru/play/embed/b632fa043743d400cce817a17ef59624/" frameBorder="0"
-    allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+    <!-- Подставляем ссылку в атрибут src -->
+    <iframe width="720" height="405" src="{{ link }}" frameborder="0" allow="autoplay; clipboard-write"
+        allowfullscreen></iframe>
 </div>
-
-
-
-
+{% endfor %}
+{% else %}
+<!-- Сообщение, если ссылок нет -->
+<p>Ссылки отсутствуют.</p>
+{% endif %}
 
 <script>
     // Выводим сообщение в консоль браузера
@@ -25,4 +27,7 @@
     // Приветствуем пользователя при загрузке страницы
     alert("Добро пожаловать на страницу!");
 </script>
+
 {% endblock %}
+
+
