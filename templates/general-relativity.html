@@ -114,16 +114,16 @@
             // --- Handle Window Resize ---
             // Обработка изменения размера окна//
             window.addEventListener('resize', onWindowResize, false);
-        }
+        }   
 
         function deformPlane() {
             const centralPos = centralSphere.position;
-            const orbitingPos = orbitingSphere.position;
-            const positions = planeGeometry.attributes.position;
-            const vertex = new THREE.Vector3(); // To avoid creating vectors in the loop
+            const orbitingPos = orbitingSphere.position; //Получаем позиции центральных объектов//  
+            const positions = planeGeometry.attributes.position; //Доступ к вершинам плоскости//
+            const vertex = new THREE.Vector3(); //Создаем временный вектор для расчетов//
 
             for (let i = 0; i < positions.count; i++) {
-                vertex.fromBufferAttribute(positions, i);
+                vertex.fromBufferAttribute(positions, i); //Проходимся по каждой вершине плоскости// 
 
                 // We work in the plane's local coordinate system (before rotation)
                 const localX = vertex.x;
@@ -146,49 +146,49 @@
                 const displacementOrbiting = -GRAVITY_STRENGTH_ORBITING / (Math.pow(distSqOrbiting, GRAVITY_FALLOFF / 2) + 1.0);
 
                 // Total displacement is the sum of influences
-                const totalDisplacement = displacementCentral + displacementOrbiting;
+                const totalDisplacement = displacementCentral + displacementOrbiting; //Рассчитываем смещение вершины//
 
                 // Apply displacement to the Z-coordinate (which becomes Y after rotation)
-                positions.setZ(i, totalDisplacement);
+                positions.setZ(i, totalDisplacement); //Применяем смещение к вершине//
             }
 
-            // Crucial: Notify Three.js that the vertices have changed
+            // Crucial: Notify Three.js that the vertices have changed  
             positions.needsUpdate = true;
-            planeGeometry.computeVertexNormals(); // Optional: Recalculate normals if using lighting that depends on them
+            planeGeometry.computeVertexNormals(); // Уведомляем Three.js о изменении вершин//
         }
 
 
-        function animate() {
-            requestAnimationFrame(animate);
+        function animate() { 
+            requestAnimationFrame(animate); //Запуск следующего кадра анимации//
 
-            const elapsedTime = clock.getElapsedTime();
+            const elapsedTime = clock.getElapsedTime(); //Получение прошедшего времени//
 
             // --- Update Orbiting Sphere Position ---
             orbitingSphere.position.x = Math.cos(elapsedTime * ORBIT_SPEED) * ORBIT_RADIUS;
-            orbitingSphere.position.z = Math.sin(elapsedTime * ORBIT_SPEED) * ORBIT_RADIUS;
+            orbitingSphere.position.z = Math.sin(elapsedTime * ORBIT_SPEED) * ORBIT_RADIUS; //Обновление позиции орбитальной сферы//
             // Optionally lift it slightly based on the deformation it would experience
             // For simplicity, keep y=0 or slightly above
-            orbitingSphere.position.y = ORBITING_SPHERE_RADIUS * 0.5;
+            orbitingSphere.position.y = ORBITING_SPHERE_RADIUS * 0.5; // Фиксируем высоту орбитальной сферы//
 
 
             // --- Deform the Plane Grid ---
-            deformPlane();
+            deformPlane(); //Деформация плоскости// 
 
             // --- Update Controls ---
-            controls.update();
+            controls.update(); // Обновление контроллеров камеры//
 
             // --- Render Scene ---
-            renderer.render(scene, camera);
+            renderer.render(scene, camera); //Отображение сцены// 
         }
 
         function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight; //Обновление соотношения сторон камеры//
+            camera.updateProjectionMatrix(); //Обновление проекционной матрицы камеры//
+            renderer.setSize(window.innerWidth, window.innerHeight); // Изменение размера рендерера// 
         }
 
-    </script>
+    </script> //Закрывающий тег //
 
-</body>
+</body> //тег закрывает основной блок содержимого веб-страницы//
 
-</html>
+</html> //тег закрывает корневой элемент HTML-документа.//
