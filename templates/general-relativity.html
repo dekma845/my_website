@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> <!--объявляет доктайп документа-->
+<html lang="en"> <!-- открывает тег html -->
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three.js General Relativity Demo</title>
+<head> <!--начало рааздела зоголовка-->
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--У этих двух строк значение методанных в html документе-->
+    <title>Three.js General Relativity Demo</title> <!--Заголовок веб-страницы-->
     <style>
         body {
             margin: 0;
@@ -15,10 +15,10 @@
         canvas {
             display: block;
         }
-    </style>
-</head>
+    </style> <!--Эти строки представляют собой CSS-стили-->
+</head> <!--конец раздела заголовка-->
 
-<body>
+<body> <!--тег для основного содержимого веб-страницы-->
 
     <script type="importmap">
         {
@@ -27,7 +27,7 @@
                 "three/addons/": "https://unpkg.com/three@0.163.0/examples/jsm/"
             }
         }
-    </script>
+    </script> <!--Это Import Maps, позволяющий управлять зависимостями JavaScript-модулей прямо в HTML-файлах-->
 
     <script type="module">
         import * as THREE from 'three';
@@ -52,65 +52,67 @@
         init();
         animate();
 
-        function init() {
+        function init() { <!--инициализирует сцену и создаёт необходимые компоненты для демонстрации трёхмерной графики с использованием библиотеки Three.js-->
             // --- Scene ---
-            scene = new THREE.Scene();
+            scene = new THREE.Scene(); //Создаётся новая сцена — это основной контейнер, в котором будут размещены все объекты, камеры и источники света.-->
+            scene = new THREE.Scene(); 
 
             // --- Camera ---
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 50, 70); // Positioned above and looking slightly down
-            camera.lookAt(0, 0, 0);
+            camera.lookAt(0, 0, 0); //срздается камера с углом образа 75 градусов, камера перемещается относительно центра карты//
 
             // --- Renderer ---
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true }); //Создаётся рендерер WebGL, который будет рисовать графику на основе данных сцены.//
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            document.body.appendChild(renderer.domElement);
+            renderer.setPixelRatio(window.devicePixelRatio); //Размер рендерера устанавливается в соответствии с размером окна браузера.//
+            document.body.appendChild(renderer.domElement); //Рендерер добавляется в тело документа, чтобы выводился результат работы.//
 
             // --- Controls ---
-            controls = new OrbitControls(camera, renderer.domElement);
+            controls = new OrbitControls(camera, renderer.domElement); //Подключаются контроллеры для управления камерой.//
             controls.enableDamping = true; // Smoother camera movement
-            controls.dampingFactor = 0.05;
+            controls.dampingFactor = 0.05; //Включено сглаживание движения камеры для плавности.//
 
             // --- Lights (Optional but good practice) ---
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
             scene.add(ambientLight);
             const pointLight = new THREE.PointLight(0xffffff, 0.8);
-            pointLight.position.set(0, 30, 0);
-            scene.add(pointLight);
+            pointLight.position.set(0, 30, 0); //Создаются два источника света: рассеянный свет (Ambient Light) и точечный источник света (Point Light).//
+            scene.add(pointLight); //Оба источника добавляются в сцену.//
 
             // --- Spacetime Grid (Plane) ---
-            planeGeometry = new THREE.PlaneGeometry(PLANE_SIZE, PLANE_SIZE, PLANE_SEGMENTS, PLANE_SEGMENTS);
+            planeGeometry = new THREE.PlaneGeometry(PLANE_SIZE, PLANE_SIZE, PLANE_SEGMENTS, PLANE_SEGMENTS); //Создаётся плоская геометрия (сетка пространства-времени) с заданными размерами и количеством сегментов.//
             const planeMaterial = new THREE.MeshBasicMaterial({
                 color: 0x00ff00, // Green
                 wireframe: true
-            });
+            }); //Материал плоскости сделан зелёным и представлен в виде проволочной сетки (wireframe).//
             planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
             planeMesh.rotation.x = -Math.PI / 2; // Rotate to be horizontal
-            scene.add(planeMesh);
+            scene.add(planeMesh); //Плоскость поворачивается горизонтально и добавляется в сцену.//
 
             // --- Central Mass (Star) ---
-            const centralSphereGeometry = new THREE.SphereGeometry(CENTRAL_SPHERE_RADIUS, 32, 32);
+            const centralSphereGeometry = new THREE.SphereGeometry(CENTRAL_SPHERE_RADIUS, 32, 32); //Создаётся сфера, представляющая центральную массу (например, звезду).//
             const centralSphereMaterial = new THREE.MeshBasicMaterial({
                 color: 0xffff00,          // Yellow
                 emissive: 0xffff00,       // Make it glow yellow
                 emissiveIntensity: 1.0
-            });
+            }); //Сфере придаётся жёлтый цвет и свечение.//
             centralSphere = new THREE.Mesh(centralSphereGeometry, centralSphereMaterial);
             centralSphere.position.y = 0; // Place slightly above the plane origin initially
-            scene.add(centralSphere);
+            scene.add(centralSphere); //Сфера добавляется в сцену и слегка приподнимается над плоскостью.//
 
             // --- Orbiting Body (Planet) ---
-            const orbitingSphereGeometry = new THREE.SphereGeometry(ORBITING_SPHERE_RADIUS, 16, 16);
+            const orbitingSphereGeometry = new THREE.SphereGeometry(ORBITING_SPHERE_RADIUS, 16, 16); //Создаётся ещё одна сфера, представляющая орбитирующее тело (планету).//
             const orbitingSphereMaterial = new THREE.MeshBasicMaterial({
                 color: 0x0000ff // Blue
-            });
-            orbitingSphere = new THREE.Mesh(orbitingSphereGeometry, orbitingSphereMaterial);
+            }); //Планете придаётся синий цвет//
+            orbitingSphere = new THREE.Mesh(orbitingSphereGeometry, orbitingSphereMaterial); //Начальная позиция планеты будет установлена позже, в цикле анимации.//
             // Initial position set in animate loop
-            scene.add(orbitingSphere);
+            scene.add(orbitingSphere); //Планета добавляется в сцену.//
 
 
             // --- Handle Window Resize ---
+            // Обработка изменения размера окна//
             window.addEventListener('resize', onWindowResize, false);
         }
 
