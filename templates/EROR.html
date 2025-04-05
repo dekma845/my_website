@@ -1,0 +1,194 @@
+<!DOCTYPE html> <!--объявляет доктайп документа-->
+<html lang="en"> <!-- открывает тег html -->
+
+<head> <!--начало рааздела зоголовка-->
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--У этих двух строк значение методанных в html документе-->
+    <title>Three.js General Relativity Demo</title> <!--Заголовок веб-страницы-->
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style> <!--Эти строки представляют собой CSS-стили-->
+</head> <!--конец раздела заголовка-->
+
+<body> <!--тег для основного содержимого веб-страницы-->
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.163.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.163.0/examples/jsm/"
+            }
+        }
+    </script> <!--Это Import Maps, позволяющий управлять зависимостями JavaScript-модулей прямо в HTML-файлах-->
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        let scene, camera, renderer, controls;
+        let planeMesh, centralSphere, orbitingSphere;
+        let planeGeometry; // Keep reference to geometry for vertex manipulation
+        const clock = new THREE.Clock();
+
+        // --- Configuration ---
+        const PLANE_SIZE = 200;
+        const PLANE_SEGMENTS = 80; // Higher density grid
+        const CENTRAL_SPHERE_RADIUS = 5;
+        const ORBITING_SPHERE_RADIUS = 1;
+        const ORBIT_RADIUS = 35;
+        const ORBIT_SPEED = 0.3;
+        const GRAVITY_STRENGTH_CENTRAL = 100; // Controls depth of central well
+        const GRAVITY_STRENGTH_ORBITING = 15;  // Controls depth of orbiting well
+        const GRAVITY_FALLOFF = 1.5; // How quickly gravity diminishes (higher = faster)
+
+        init();
+        animate();
+
+        function init() { <!--инициализирует сцену и создаёт необходимые компоненты для демонстрации трёхмерной графики с использованием библиотеки Three.js-->
+            // --- Scene ---
+            scene = new THREE.Scene(); //Создаётся новая сцена — это основной контейнер, в котором будут размещены все объекты, камеры и источники света.-->
+            scene = new THREE.Scene(); 
+
+            // --- Camera ---
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 50, 70); // Positioned above and looking slightly down
+            camera.lookAt(0, 0, 0); //срздается камера с углом образа 75 градусов, камера перемещается относительно центра карты//
+
+            // --- Renderer ---
+            renderer = new THREE.WebGLRenderer({ antialias: true }); //Создаётся рендерер WebGL, который будет рисовать графику на основе данных сцены.//
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio); //Размер рендерера устанавливается в соответствии с размером окна браузера.//
+            document.body.appendChild(renderer.domElement); //Рендерер добавляется в тело документа, чтобы выводился результат работы.//
+
+            // --- Controls ---
+            controls = new OrbitControls(camera, renderer.domElement); //Подключаются контроллеры для управления камерой.//
+            controls.enableDamping = true; // Smoother camera movement
+            controls.dampingFactor = 0.05; //Включено сглаживание движения камеры для плавности.//
+
+            // --- Lights (Optional but good practice) ---
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xffffff, 0.8);
+            pointLight.position.set(0, 30, 0); //Создаются два источника света: рассеянный свет (Ambient Light) и точечный источник света (Point Light).//
+            scene.add(pointLight); //Оба источника добавляются в сцену.//
+
+            // --- Spacetime Grid (Plane) ---
+            planeGeometry = new THREE.PlaneGeometry(PLANE_SIZE, PLANE_SIZE, PLANE_SEGMENTS, PLANE_SEGMENTS); //Создаётся плоская геометрия (сетка пространства-времени) с заданными размерами и количеством сегментов.//
+            const planeMaterial = new THREE.MeshBasicMaterial({
+                color: 0x00ff00, // Green
+                wireframe: true
+            }); //Материал плоскости сделан зелёным и представлен в виде проволочной сетки (wireframe).//
+            planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+            planeMesh.rotation.x = -Math.PI / 2; // Rotate to be horizontal
+            scene.add(planeMesh); //Плоскость поворачивается горизонтально и добавляется в сцену.//
+
+            // --- Central Mass (Star) ---
+            const centralSphereGeometry = new THREE.SphereGeometry(CENTRAL_SPHERE_RADIUS, 32, 32); //Создаётся сфера, представляющая центральную массу (например, звезду).//
+            const centralSphereMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffff00,          // Yellow
+                emissive: 0xffff00,       // Make it glow yellow
+                emissiveIntensity: 1.0
+            }); //Сфере придаётся жёлтый цвет и свечение.//
+            centralSphere = new THREE.Mesh(centralSphereGeometry, centralSphereMaterial);
+            centralSphere.position.y = 0; // Place slightly above the plane origin initially
+            scene.add(centralSphere); //Сфера добавляется в сцену и слегка приподнимается над плоскостью.//
+
+            // --- Orbiting Body (Planet) ---
+            const orbitingSphereGeometry = new THREE.SphereGeometry(ORBITING_SPHERE_RADIUS, 16, 16); //Создаётся ещё одна сфера, представляющая орбитирующее тело (планету).//
+            const orbitingSphereMaterial = new THREE.MeshBasicMaterial({
+                color: 0x0000ff // Blue
+            }); //Планете придаётся синий цвет//
+            orbitingSphere = new THREE.Mesh(orbitingSphereGeometry, orbitingSphereMaterial); //Начальная позиция планеты будет установлена позже, в цикле анимации.//
+            // Initial position set in animate loop
+            scene.add(orbitingSphere); //Планета добавляется в сцену.//
+
+
+            // --- Handle Window Resize ---
+            // Обработка изменения размера окна//
+            window.addEventListener('resize', onWindowResize, false);
+        }   
+
+        function deformPlane() {
+            const centralPos = centralSphere.position;
+            const orbitingPos = orbitingSphere.position; //Получаем позиции центральных объектов//  
+            const positions = planeGeometry.attributes.position; //Доступ к вершинам плоскости//
+            const vertex = new THREE.Vector3(); //Создаем временный вектор для расчетов//
+
+            for (let i = 0; i < positions.count; i++) {
+                vertex.fromBufferAttribute(positions, i); //Проходимся по каждой вершине плоскости// 
+
+                // We work in the plane's local coordinate system (before rotation)
+                const localX = vertex.x;
+                const localZ = vertex.y; // In PlaneGeometry, y corresponds to depth before rotation
+
+                // Calculate distance squared from central sphere (projected onto the plane)
+                const dxCentral = localX - centralPos.x;
+                const dzCentral = localZ - centralPos.z; // Use centralPos.z
+                const distSqCentral = dxCentral * dxCentral + dzCentral * dzCentral;
+
+                // Calculate distance squared from orbiting sphere (projected onto the plane)
+                const dxOrbiting = localX - orbitingPos.x;
+                // Compare the vertex's world Z coordinate (-localZ) with the sphere's world Z coordinate (orbitingPos.z)
+                const dzOrbiting_world_diff = -localZ - orbitingPos.z;
+                const distSqOrbiting = dxOrbiting * dxOrbiting + dzOrbiting_world_diff * dzOrbiting_world_diff; // Use the squared world Z difference
+
+                // Calculate displacement based on inverse distance (gravity well)
+                // Add a small epsilon (e.g., 1.0) to avoid division by zero / extreme values at center
+                const displacementCentral = -GRAVITY_STRENGTH_CENTRAL / (Math.pow(distSqCentral, GRAVITY_FALLOFF / 2) + 1.0);
+                const displacementOrbiting = -GRAVITY_STRENGTH_ORBITING / (Math.pow(distSqOrbiting, GRAVITY_FALLOFF / 2) + 1.0);
+
+                // Total displacement is the sum of influences
+                const totalDisplacement = displacementCentral + displacementOrbiting; //Рассчитываем смещение вершины//
+
+                // Apply displacement to the Z-coordinate (which becomes Y after rotation)
+                positions.setZ(i, totalDisplacement); //Применяем смещение к вершине//
+            }
+
+            // Crucial: Notify Three.js that the vertices have changed  
+            positions.needsUpdate = true;
+            planeGeometry.computeVertexNormals(); // Уведомляем Three.js о изменении вершин//
+        }
+
+
+        function animate() { 
+            requestAnimationFrame(animate); //Запуск следующего кадра анимации//
+
+            const elapsedTime = clock.getElapsedTime(); //Получение прошедшего времени//
+
+            // --- Update Orbiting Sphere Position ---
+            orbitingSphere.position.x = Math.cos(elapsedTime * ORBIT_SPEED) * ORBIT_RADIUS;
+            orbitingSphere.position.z = Math.sin(elapsedTime * ORBIT_SPEED) * ORBIT_RADIUS; //Обновление позиции орбитальной сферы//
+            // Optionally lift it slightly based on the deformation it would experience
+            // For simplicity, keep y=0 or slightly above
+            orbitingSphere.position.y = ORBITING_SPHERE_RADIUS * 0.5; // Фиксируем высоту орбитальной сферы//
+
+
+            // --- Deform the Plane Grid ---
+            deformPlane(); //Деформация плоскости// 
+
+            // --- Update Controls ---
+            controls.update(); // Обновление контроллеров камеры//
+
+            // --- Render Scene ---
+            renderer.render(scene, camera); //Отображение сцены// 
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight; //Обновление соотношения сторон камеры//
+            camera.updateProjectionMatrix(); //Обновление проекционной матрицы камеры//
+            renderer.setSize(window.innerWidth, window.innerHeight); // Изменение размера рендерера// 
+        }
+
+    </script> //Закрывающий тег //
+
+</body> //тег закрывает основной блок содержимого веб-страницы//
+
+</html> //тег закрывает корневой элемент HTML-документа.//
