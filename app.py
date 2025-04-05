@@ -51,7 +51,24 @@ def max_number(n1 = 1, n2 = 3, n3 = 3):
         return "n2 < n1"
     else:
         return "max_number я "
-    
+
+
+
+@app.route('/earth')
+def earth():
+    return render_template('/earth.html') # return возвращает отрендаренный шаблон
+
+@app.route('/EM-solenoid')
+def em_solenoid():
+    return render_template('/EM-solenoid.html')
+
+@app.route('/general-relativity')
+def general_relativity():
+    return render_template('/general-relativity.html')
+
+
+
+
 
 
 # Запускаем сервер
